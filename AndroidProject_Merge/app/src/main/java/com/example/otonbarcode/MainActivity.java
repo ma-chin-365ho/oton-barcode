@@ -49,11 +49,19 @@ public class MainActivity extends AppCompatActivity {
             if(result.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
+
+                String barcode = result.getContents();
+
+                String url = "https://192.168.1.26:8080/add-barcode/" + barcode;
+                // String url = "https://www.example.com";
+
+                // Log.d(TAG, url);
+
                 // 非同期処理の実行
                 MyAsyncTask task = new MyAsyncTask(this);
-                task.execute("https://www.example.com");
+                task.execute(url);
                 // task.execute("https://www.example.com", "hi"); // POST の場合
-                Log.d(TAG, "created");
+                // Log.d(TAG, "created");
 
                 Toast.makeText(this, "Scanned: " + result.getContents(),Toast.LENGTH_LONG).show();
             }

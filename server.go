@@ -46,7 +46,8 @@ func webServer() {
 			"err" : "none",
 		})
     })
-    r.Run()
+	// r.Run() 
+	r.RunTLS(":8080", "/Users/stmsnr/server.crt", "/Users/stmsnr/server.key")
 }
 
 func main() {

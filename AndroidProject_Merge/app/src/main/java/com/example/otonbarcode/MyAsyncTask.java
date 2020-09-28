@@ -13,6 +13,18 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 // POST の場合
 // import java.io.BufferedWriter;
 // import java.io.OutputStream;
@@ -52,6 +64,8 @@ public class MyAsyncTask extends AsyncTask<String, Void, String> {
         HttpsURLConnection connection = null;
 
         try {
+            disableSSLCertificateChecking();
+
             // URL 文字列をセットします。
             URL url = new URL(params[0]);
             connection = (HttpsURLConnection)url.openConnection();
@@ -88,6 +102,8 @@ public class MyAsyncTask extends AsyncTask<String, Void, String> {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if(inputStream != null) {
                 try {
@@ -108,5 +124,33 @@ public class MyAsyncTask extends AsyncTask<String, Void, String> {
         // 本メソッドは UI スレッドで処理されるため、ビューを操作できます。
         Log.d(TAG, result);
         //textView.setText(result);
+    }
+
+    // ***For development use only (This code contains some security issues) ***
+    public static void disableSSLCertificateChecking() throws Exception {
+        System.out.println("[WARN] *** SSLCertificate Checking DISABLED ***");
+
+        // ホスト名の検証を行わない
+        HostnameVerifier hv = new HostnameVerifier() {
+            public boolean verify(String s, SSLSession ses) {
+                System.out.println("[WARN] *** HostnameVerifier DISABLED *** ");
+                return true;
+            }
+        };
+        HttpsURLConnection.setDefaultHostnameVerifier(hv);
+        // 証明書の検証を行わない
+        KeyManager[] km = null;
+        TrustManager[] tm = { new X509TrustManager() {
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+            }
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+            }
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+        } };
+        SSLContext sslcontext = SSLContext.getInstance("SSL");
+        sslcontext.init(km, tm, new SecureRandom());
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslcontext.getSocketFactory());
     }
 }
