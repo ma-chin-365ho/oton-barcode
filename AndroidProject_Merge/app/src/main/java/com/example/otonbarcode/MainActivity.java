@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
                 String barcode = result.getContents();
 
-                String url = "https://192.168.1.26:8080/add-barcode/" + barcode;
+                // String url = "https://192.168.1.26:8080/add-barcode/" + barcode;
+                String url = "https://192.168.1.123:8080/add-barcode/" + barcode;
                 // String url = "https://www.example.com";
 
                 // Log.d(TAG, url);
